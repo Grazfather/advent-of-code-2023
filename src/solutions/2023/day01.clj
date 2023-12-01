@@ -1,7 +1,22 @@
 ^{:nextjournal.clerk/visibility :hide-ns}
-(ns solutions.day01
+(ns solutions.2023.day01
+  {:nextjournal.clerk/toc true}
   (:require [clojure.java.io :as io]
+            [util :as u]
+            [nextjournal.clerk :as clerk]
             [clojure.string :as str]))
+
+;; # Problem
+{:nextjournal.clerk/visibility {:code :hide :result :show}}
+(clerk/html (u/load-problem "01" "2023"))
+{:nextjournal.clerk/visibility {:code :show :result :show}}
+
+;; # Solution
+;;
+;; First things first, let's load our input and parse it
+(def input (->> (slurp (io/resource "inputs/2023/day01.txt")) ;; Load the resource
+                str/split-lines))                             ;; Split into lines
+{:nextjournal.clerk/visibility {:result :hide}}
 
 {:nextjournal.clerk/visibility {:code :hide :result :hide}}
 (def sample-input1 (->>  "1abc2
@@ -17,10 +32,6 @@ xtwone3four
 zoneight234
 7pqrstsixteen"
                        (str/split-lines)))
-
-(def input (->> (io/resource "inputs/day01.txt")
-                slurp
-                str/split-lines))
 
 {:nextjournal.clerk/visibility {:code :show :result :hide}}
 ;; We need a way to map written out digits to digits. We map to strings since we parse later.
@@ -51,6 +62,7 @@ zoneight234
                   Integer/parseInt))
        (apply +)))
 
+;; ## Part 1
 ;; For part 1 we just collect digits
 {:nextjournal.clerk/visibility {:code :show :result :hide}}
 (defn solve-part1 [input]
@@ -59,6 +71,7 @@ zoneight234
 {:nextjournal.clerk/visibility {:code :show :result :show}}
 (solve-part1 input)
 
+;; ## Part 2
 ;; For part 2 we adjust our regex to tokenize on single digits plus any written out digit
 {:nextjournal.clerk/visibility {:code :show :result :hide}}
 (defn solve-part2 [input]
