@@ -55,7 +55,7 @@ zoneight234
 ;; Solve function works for both parts
 (defn solve [input regex]
   (->> input
-       (map #(->> (clojure.core/re-seq regex %)
+       (map #(->> (re-seq regex %)
                   (map second) ; First group is empty
                   (map token->digit)
                   ((fn [t] (str (first t) (last t))))
@@ -79,3 +79,28 @@ zoneight234
 
 {:nextjournal.clerk/visibility {:code :show :result :show}}
 (solve-part2 input)
+
+
+; ### Without lookahead regex
+;; A lot of complaints/frustration on hacker news and discord. Some languages' regex engines don't support lookaheads,
+;; and many just didn't know about them. I saw a lot of gross (imo) solutions that hardcoded some exceptions. I
+;; figured we can solve it with a simple regex.
+;;
+;; The way this works is you just do a simple regex for the first matching token. To find the last, you do the same
+;; thing, but you search in the reversed string, using a regex with all the spelled out digits reversed. Very simple!
+{:nextjournal.clerk/visibility {:code :show :result :hide}}
+(defn solve-simple [input]
+  (->> input
+       (map #(->> %
+                  ((fn [line] (let [regex1 (re-pattern (str "(\\d|" (str/join "|" (keys digits)) ")"))
+                                    regex2 (re-pattern (str "(\\d|" (str/join "|" (map str/reverse (keys digits))) ")"))
+                                    fst (first (re-find regex1 line))
+                                    fst (token->digit fst)
+                                    snd (str/reverse (first (re-find regex2 (str/reverse line))))
+                                    snd (token->digit snd)]
+                                (str fst snd))))
+                  Integer/parseInt))
+       (apply +)))
+
+{:nextjournal.clerk/visibility {:code :show :result :show}}
+(solve-simple input)
