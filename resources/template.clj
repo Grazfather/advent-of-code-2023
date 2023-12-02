@@ -9,21 +9,21 @@
 ;; # Problem
 {:nextjournal.clerk/visibility {:code :hide :result :show}}
 (clerk/html (u/load-problem "DAY" "YEAR"))
-{:nextjournal.clerk/visibility {:code :show :result :show}}
+{:nextjournal.clerk/visibility {:code :show :result :hide}}
 
 ;; # Solution
 ;;
 ;; First things first, let's load our input and parse it
-(def input (->> (slurp (io/resource "inputs/YEAR/dayDAY.txt")) ;; Load the resource
-                str/split-lines))                             ;; Split into lines
-{:nextjournal.clerk/visibility {:result :hide}}
+(def input (->> (slurp (io/resource "inputs/YEAR/dayDAY.txt"))
+                str/split-lines))
+{:nextjournal.clerk/visibility {:code :show :result :hide}}
 
 ;; ## Part 1
 (defn part-1
   [input]
   (println "Part 1"))
 
-{:nextjournal.clerk/visibility {:code :hide :result :show}}
+{:nextjournal.clerk/visibility {:code :show :result :show}}
 (part-1 input)
 
 ;; ## Part 2
@@ -32,5 +32,5 @@
   [input]
   (println "Part 2"))
 
-{:nextjournal.clerk/visibility {:code :hide :result :show}}
+{:nextjournal.clerk/visibility {:code :show :result :show}}
 (part-2 input)

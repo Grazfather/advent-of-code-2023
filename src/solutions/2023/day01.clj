@@ -9,16 +9,14 @@
 ;; # Problem
 {:nextjournal.clerk/visibility {:code :hide :result :show}}
 (clerk/html (u/load-problem "01" "2023"))
-{:nextjournal.clerk/visibility {:code :show :result :show}}
+{:nextjournal.clerk/visibility {:code :show :result :hide}}
 
 ;; # Solution
 ;;
 ;; First things first, let's load our input and parse it
-(def input (->> (slurp (io/resource "inputs/2023/day01.txt")) ;; Load the resource
-                str/split-lines))                             ;; Split into lines
-{:nextjournal.clerk/visibility {:result :hide}}
+(def input (->> (slurp (io/resource "inputs/2023/day01.txt"))
+                str/split-lines))
 
-{:nextjournal.clerk/visibility {:code :hide :result :hide}}
 (def sample-input1 (->>  "1abc2
 pqr3stu8vwx
 a1b2c3d4e5f
@@ -33,7 +31,6 @@ zoneight234
 7pqrstsixteen"
                        (str/split-lines)))
 
-{:nextjournal.clerk/visibility {:code :show :result :hide}}
 ;; We need a way to map written out digits to digits. We map to strings since we parse later.
 (def digits {"zero" "0"
              "one" "1"
@@ -64,7 +61,6 @@ zoneight234
 
 ;; ## Part 1
 ;; For part 1 we just collect digits
-{:nextjournal.clerk/visibility {:code :show :result :hide}}
 (defn solve-part1 [input]
   (solve input #"(\d)"))
 
