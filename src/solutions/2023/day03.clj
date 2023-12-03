@@ -94,7 +94,31 @@
 {:nextjournal.clerk/visibility {:code :show :result :hide}}
 (defn part-2
   [input]
-  (println "Part 2"))
+  (let [num-coords (->> input
+                        (map (fn [line]
+                               ; Get all numbers on this line, with the x values it spans
+                               (->> (locate-matches #"\d+" line)
+                                    (map (fn [match] [(Integer/parseInt (match :match)) (range (match :start) (match :end))]))))))
+        ; Convert it to a list of [num coords] where coords is a list of the coords the number spans
+        values (for [[y num-lines] (map vector (range) num-coords)
+                     [num xs] num-lines]
+                 [num (for [x xs] [x y])])
+        symbol-coords (->> input
+                           (map (fn [line]
+                                  (->> (locate-matches #"[\\*]" line)
+                                       (map #(% :start) )))))
+        symbol-coords (for [[y symbol-coords-line] (map vector (range) symbol-coords)
+                            x symbol-coords-line] [x y])
+        ; Get all part nums for each gear, filter to those with 2, and multiply them
+        gear-ratios (->> symbol-coords
+                         (map (fn [gear-coord]
+                                (for [[num coords] values
+                                      :when (neighbour? gear-coord coords)]
+                                  num)))
+                         (filter #(= (count %) 2))
+                         (map #(apply * %)))]
+    (apply + gear-ratios)))
 
 {:nextjournal.clerk/visibility {:code :show :result :show}}
+(part-2 sample-input)
 (part-2 input)
