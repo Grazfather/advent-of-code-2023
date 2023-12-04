@@ -30,7 +30,6 @@
                        str/split-lines))
 {:nextjournal.clerk/visibility {:code :show :result :hide}}
 
-;; ## Part 1
 ; This function returns a list of matches, with start, end, and the match itself
 (defn locate-matches [pattern string]
   (let [matcher (re-matcher pattern string)]
@@ -55,8 +54,9 @@
 (defn neighbour? [c1 cs]
   (not (empty? (set/intersection (set (neighbours c1)) (set cs)))))
 
-(defn part-1
-  [input]
+; Our solve function produces a list of symbol coordinates and values with a list of their coordinates. Each part takes
+; these and uses them to filter for valid values.
+(defn solve [input filter-fn]
   (let [num-coords (->> input
                         (map (fn [line]
                                ; Get all numbers on this line, with the x values it spans
@@ -72,13 +72,19 @@
                                        (map #(% :start) )))))
         symbol-coords (for [[y symbol-coords-line] (map vector (range) symbol-coords)
                             x symbol-coords-line] [x y])
-        ; Get all part nums that are in a valid coord
-        valid-nums (for [symbol-coord symbol-coords
-                         [num coords] values
-                         :when (neighbour? symbol-coord coords)]
-                     num)]
+        vals (filter-fn symbol-coords values)]
     ; Add up the part numbers
-    (apply + valid-nums)))
+    (apply + vals)))
+
+;; ## Part 1
+
+; For part 1 we just want to filter all the numbers by the ones touching a symbol.
+(defn part-1
+  [input]
+  (solve input #(for [symbol-coord %1
+                      [num coords] %2
+                      :when (neighbour? symbol-coord coords)]
+                  num)))
 
 {:nextjournal.clerk/visibility {:code :show :result :show}}
 (part-1 sample-input)
@@ -91,33 +97,19 @@
 (assert (= (neighbour? [0 0] [[2 1] [3 1]]) false))
 
 ;; ## Part 2
+; It seems that we don't need to check for gears, as it's the only symbol that will touch two numbers. We just filter
+; for symbols that have exactly two neighbours and multiply them.
 {:nextjournal.clerk/visibility {:code :show :result :hide}}
 (defn part-2
   [input]
-  (let [num-coords (->> input
-                        (map (fn [line]
-                               ; Get all numbers on this line, with the x values it spans
-                               (->> (locate-matches #"\d+" line)
-                                    (map (fn [match] [(Integer/parseInt (match :match)) (range (match :start) (match :end))]))))))
-        ; Convert it to a list of [num coords] where coords is a list of the coords the number spans
-        values (for [[y num-lines] (map vector (range) num-coords)
-                     [num xs] num-lines]
-                 [num (for [x xs] [x y])])
-        symbol-coords (->> input
-                           (map (fn [line]
-                                  (->> (locate-matches #"[\\*]" line)
-                                       (map #(% :start) )))))
-        symbol-coords (for [[y symbol-coords-line] (map vector (range) symbol-coords)
-                            x symbol-coords-line] [x y])
-        ; Get all part nums for each gear, filter to those with 2, and multiply them
-        gear-ratios (->> symbol-coords
-                         (map (fn [gear-coord]
-                                (for [[num coords] values
-                                      :when (neighbour? gear-coord coords)]
-                                  num)))
-                         (filter #(= (count %) 2))
-                         (map #(apply * %)))]
-    (apply + gear-ratios)))
+  (solve input (fn [symbol-coords values]
+                 (->> symbol-coords
+                      (map (fn [gear-coord]
+                             (for [[num coords] values
+                                   :when (neighbour? gear-coord coords)]
+                               num)))
+                      (filter #(= (count %) 2))
+                      (map #(apply * %))))))
 
 {:nextjournal.clerk/visibility {:code :show :result :show}}
 (part-2 sample-input)
